@@ -35,7 +35,7 @@
     <li>
       <a href="#getting-started">Getting Started</a>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#levels">Levels</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
@@ -74,14 +74,57 @@ Do you have what it takes to become the legendary Bureaucracy Hero? Sign up now 
 ## Getting Started
 
 1. Go to the [Sign Up website]()
+2. Enjoy!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- USAGE EXAMPLES -->
+<!-- LEVELS -->
 
-## Usage
+## Levels
 
-usage details here
+### Level 1: The Elusive Button Chase
+
+Start your heroic journey by hunting down the "Submit" button that refuses to stay put. Quick reflexes and a keen eye are your only allies in this chaotic click-fest.
+
+### Level 2: Curse of the Multiplying Cursors
+
+An IT glitch gone rogue spawns endless cursors across your screen. Navigate through the confusion, avoid the decoy pointers, and use logic to identify the true cursor capable of completing your task. Can you outsmart the curse before your sanity splits?
+
+### Level 3: Evil Simon's Pattern Protocol
+
+<img src="src/app/assets/LevelThree.png" alt="LevelThree screenshot" width="700" height="auto">
+
+Simon, the malevolent AI, guards the corporate server with an impenetrable memory game. Repeat its increasingly intricate patterns of blinking icons, but beware—every mistake adds a layer of bureaucracy to your challenge. Only those with perfect recall will survive.
+
+### Level 4: The Bureaucratic Maze of Doom
+
+<img src="src/app/assets/LevelFour.png" alt="LevelFour screenshot" width="700" height="auto">
+
+Navigate a labyrinth of cubicles, filing cabinets, and coffee-stained memos as you search for the HR portal. Can you find the exit before your session times out?
+
+### Level 5: The Ancient CAPTCHA Trial
+
+<img src="src/app/assets/LevelFive.png" alt="LevelFive screenshot" width="700" height="auto">
+
+Prove your worth in the ultimate test of patience and deciphering skill. Translate arcane symbols, squiggly text, and warped images in a CAPTCHA designed to weed out mere mortals. Failure is met with endless retries, but success brings you closer to the mythical Form 27B/6.
+
+### Level 6: The Department of Nominal Validation
+
+<img src="src/app/assets/LevelSix.png" alt="LevelSix screenshot" width="700" height="auto">
+
+Enter a realm where your name must meet impossible standards. Adjust its spelling, format, and capitalization to appease the Validation Overlords. Only after countless rejections and vague error messages will you unlock the sacred approval stamp.
+
+### Level 7: The Infinite Terms & Conditions
+
+Scroll through an unending legal tome that seems to grow longer with every swipe. Hidden within are the magic words needed to proceed, but beware—the hypnotic monotony may consume you. Endurance and a willingness to read the fine print are your keys to victory.
+
+### Completion
+
+<img src="src/app/assets/completionPage.png" alt="Completion screenshot" width="700" height="auto">
+
+Congratulations, Bureaucracy Hero! After braving endless loops, cryptic CAPTCHAs, and the dreaded maze of corporate red tape, you’ve submitted Form 27B/6 and unlocked ultimate approval power.
+
+The office celebrates your triumph (with a polite email, of course), and the prophecy is fulfilled. Your vacation request is granted—but beware, rumors of Form 42X/7 are already spreading…
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
