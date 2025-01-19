@@ -79,7 +79,14 @@ const generateMaze = (rows: number, cols: number): string[][] => {
   }
 
   // Set entrance and exit
-  maze[0][1] = " ";  // Entrance
+  // Make the entrance wider by setting more cells as paths
+  maze[0][0] = " ";  // Entrance left
+  maze[0][1] = " ";  // Entrance center
+  maze[0][2] = " ";  // Entrance right
+  maze[1][0] = " ";  // Path below entrance left
+  maze[1][1] = " ";  // Path below entrance center
+  maze[1][2] = " ";  // Path below entrance right
+  
   maze[rows - 2][cols - 2] = " ";  // Exit
   maze[rows - 2][cols - 3] = " ";  // Path to exit
   maze[rows - 3][cols - 2] = " ";  // Additional path near exit
@@ -148,8 +155,8 @@ const MazeGame = () => {
   };
 
   const handleCellClick = (rowIndex: number, colIndex: number) => {
-    // Start game only when clicking the green entrance tile
-    if (!gameStarted && rowIndex === 0 && colIndex === 1) {
+    // Start game when clicking any of the green entrance tiles
+    if (!gameStarted && rowIndex <= 1 && colIndex >= 0 && colIndex <= 2) {
       setGameStarted(true);
     }
   };
@@ -202,7 +209,7 @@ const MazeGame = () => {
         Enter through the green...<br/>
         <span className="text-red-500">and hope you aren't seen</span>
       </div>
-      <span className="text-green-500">Click on the green zone to start</span>
+      <span className={`${fp.className} text-green-500 mb-2`}>{gameStarted ? "Go!" : "Click on the green zone to start"}</span>
       {gameStarted && !isGameOver && !hasWon && (
         <motion.div 
           className="absolute left-4 top-4 rounded-lg bg-gray-800 p-4 shadow-lg"
@@ -235,7 +242,7 @@ const MazeGame = () => {
             }
 
             // Special styling for entrance and exit
-            if (rowIndex === 0 && colIndex === 1) {
+            if ((rowIndex <= 1 && colIndex >= 0 && colIndex <= 2)) {
               cellClass = "bg-green-500 animate-pulse cursor-pointer";
             } else if (
               rowIndex === mazeLayout.length - 2 &&
