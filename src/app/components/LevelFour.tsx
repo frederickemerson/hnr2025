@@ -38,6 +38,12 @@ const generateMaze = (rows: number, cols: number): string[][] => {
   const startY = 1;
 
   // Mark start cell as visited
+  if (!maze) {
+    console.log("Error!");
+    return [[]];
+  }
+  if (!maze[startX]) return [[]];
+
   maze[startX][startY] = " ";
   stack.push({ x: startX, y: startY });
 
@@ -49,44 +55,18 @@ const generateMaze = (rows: number, cols: number): string[][] => {
     [-2, 0]
   ];
 
-  while (stack.length > 0) {
-    const current = stack[stack.length - 1]!;
-    if (!current) continue;
-    
-    // Get unvisited neighbors
-    const unvisitedNeighbors = directions
-      .map(([dx, dy]) => ({
-        x: current.x + dx,
-        y: current.y + dy,
-        dx,
-        dy
-      }))
-      .filter(({ x, y }) => isValid(x, y) && maze[x][y] === "#");
-
-    if (unvisitedNeighbors.length > 0) {
-      // Randomly choose a neighbor
-      const { x, y, dx, dy } = unvisitedNeighbors[
-        Math.floor(Math.random() * unvisitedNeighbors.length)
-      ];
-      
-      // Carve a path
-      maze[x][y] = " ";
-      maze[current.x + dx/2][current.y + dy/2] = " ";
-      stack.push({ x, y });
-    } else {
-      stack.pop();
-    }
-  }
-
   // Set entrance and exit
   // Make the entrance wider by setting more cells as paths
+  
+  if (!maze && !maze[0][0]) return [];
   maze[0][0] = " ";  // Entrance left
   maze[0][1] = " ";  // Entrance center
   maze[0][2] = " ";  // Entrance right
   maze[1][0] = " ";  // Path below entrance left
   maze[1][1] = " ";  // Path below entrance center
   maze[1][2] = " ";  // Path below entrance right
-  
+
+
   maze[rows - 2][cols - 2] = " ";  // Exit
   maze[rows - 2][cols - 3] = " ";  // Path to exit
   maze[rows - 3][cols - 2] = " ";  // Additional path near exit
@@ -95,7 +75,7 @@ const generateMaze = (rows: number, cols: number): string[][] => {
 };
 
 const MazeGame = () => {
-  const [mazeLayout, setMazeLayout] = useState<string[][]>([]);
+  const [mazeLayout, setMazeLayout] = useState<string[][]>(generateMaze(20, 20));
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [hasWon, setHasWon] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(30);
@@ -107,11 +87,11 @@ const MazeGame = () => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const rows = 20;
-    const cols = 20;
-    setMazeLayout(generateMaze(rows, cols));
-  }, []);
+  // useEffect(() => {
+  //   const rows = 20;
+  //   const cols = 20;
+  //   setMazeLayout(generateMaze(rows, cols));
+  // }, []);
 
   useEffect(() => {
     if (timer <= 0) {
