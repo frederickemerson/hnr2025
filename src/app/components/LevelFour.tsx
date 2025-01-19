@@ -59,17 +59,24 @@ const generateMaze = (rows: number, cols: number): string[][] => {
   // Make the entrance wider by setting more cells as paths
   
   if (!maze && !maze[0][0]) return [];
-  maze[0][0] = " ";  // Entrance left
-  maze[0][1] = " ";  // Entrance center
-  maze[0][2] = " ";  // Entrance right
-  maze[1][0] = " ";  // Path below entrance left
-  maze[1][1] = " ";  // Path below entrance center
-  maze[1][2] = " ";  // Path below entrance right
 
-
-  maze[rows - 2][cols - 2] = " ";  // Exit
-  maze[rows - 2][cols - 3] = " ";  // Path to exit
-  maze[rows - 3][cols - 2] = " ";  // Additional path near exit
+  if (maze[0]?.[0] !== undefined && maze[0]?.[1] !== undefined && maze[0]?.[2] !== undefined) {
+    maze[0][0] = " ";  // Entrance left
+    maze[0][1] = " ";  // Entrance right
+    maze[0][2] = " ";  // Entrance center
+  }
+  
+  if (maze[0]?.[1] !== undefined) maze[0][1] = " ";
+  
+  const setMazeValue = (x: number, y: number, value: string) => {
+    if (maze[x]?.[y] !== undefined) {
+      maze[x][y] = value;
+    }
+  };
+  
+  setMazeValue(rows - 2, cols - 2, " ");
+  setMazeValue(rows - 2, cols - 3, " ");
+  setMazeValue(rows - 3, cols - 2, " ");
 
   return maze;
 };
@@ -115,19 +122,20 @@ const MazeGame = () => {
       const y = Math.floor((e.clientY - bounds.top) / 30);
 
       // Check if position is within maze bounds
-      if (y >= 0 && y < mazeLayout.length && x >= 0 && x < mazeLayout[0]?.length) {
+      if (
+        mazeLayout?.[y]?.[x] !== undefined // Ensure mazeLayout[y][x] is defined
+      ) {
         if (mazeLayout[y][x] === " " || 
-            (y === mazeLayout.length - 2 && x === mazeLayout[0].length - 2)) {
-
-          // Win condition
-          if (y === mazeLayout.length - 2 && x === mazeLayout[0].length - 2) {
+            (y === (mazeLayout.length ?? 0) - 2 && x === (mazeLayout[0]?.length ?? 0) - 2)) {
+      
+          if (y === (mazeLayout.length ?? 0) - 2 && x === (mazeLayout[0]?.length ?? 0) - 2) {
             setHasWon(true);
             const timer = setTimeout(() => {
               router.push('/level/5');
             }, 2000);
             return () => clearTimeout(timer);
           }
-        } else if (mazeLayout[y][x] === "#") {
+        } else if (mazeLayout[y][x] === "#" && gameStarted) {
           setIsGameOver(true);
         }
       }
@@ -187,7 +195,7 @@ const MazeGame = () => {
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-b bg-black">
       <div className={`${fp.className} mb-8 text-center text-2xl text-white`}>
         Enter through the green...<br/>
-        <span className="text-red-500">and hope you aren't seen</span>
+        <span className="text-red-500">and hope you aren&apos;t seen</span>
       </div>
       <span className={`${fp.className} text-green-500 mb-2`}>{gameStarted ? "Go!" : "Click on the green zone to start"}</span>
       {gameStarted && !isGameOver && !hasWon && (
@@ -226,7 +234,7 @@ const MazeGame = () => {
               cellClass = "bg-green-500 animate-pulse cursor-pointer";
             } else if (
               rowIndex === mazeLayout.length - 2 &&
-              colIndex === mazeLayout[0]?.length - 2
+              colIndex === (mazeLayout[0]?.length ?? 0) - 2
             ) {
               cellClass = "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-gradient";
             }
