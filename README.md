@@ -60,7 +60,12 @@ Do you have what it takes to become the legendary Bureaucracy Hero? Sign up now 
 
 - [![React][React.js]][React-url]
 - [![TailwindCSS][TailwindCSS]][TailwindCSS-url]
-- [![NodeJS][NodeJS]][NodeJS-url]
+- [![Next][Next.js]][Next-url]
+- [![npm][Npm]][Npm-url]
+- [![pnpm][pnpm]][pnpm-url]
+- [![bun][Bun]][Bun-url]
+- [Framer-motion][Motion-url]
+- [Whisper][Whisper-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -134,5 +139,13 @@ Developed by Team Fast Fingers (Derrick, Fred, Raymond, Shiqi)
 [TailwindCSS-url]: https://tailwindcss.com/
 [React.js]: https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB
 [React-url]: https://reactjs.org/
-[NodeJS]: https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white
-[NodeJS-url]: https://nodejs.org/en
+[Next.js]: https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white
+[Next-url]: https://nextjs.org/
+[Npm]: https://img.shields.io/badge/npm-CB3837?logo=npm&logoColor=fff
+[Npm-url]: https://www.npmjs.com/
+[Motion-url]: https://motion.dev/
+[Whisper-url]: https://github.com/openai/whisper
+[pnpm]: https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=fff
+[pnpm-url]: https://pnpm.io/
+[Bun]: https://img.shields.io/badge/Bun-000?logo=bun&logoColor=fff
+[Bun-url]: https://bun.sh/
