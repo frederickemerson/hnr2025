@@ -15,7 +15,8 @@
 <h2 align="center">Sign Up</h2>
   <p align="center">
     The Quest to be the Bureaucracy Hero
-    <br />
+
+[//]: # (    <br />)
     <a href="https://github.com/provsalt/hnr2025-2/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
     <a href="https://github.com/provsalt/hnr2025-2/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
@@ -73,7 +74,7 @@ Do you have what it takes to become the legendary Bureaucracy Hero? Sign up now 
 
 ## Getting Started
 
-1. Go to the [Sign Up website]()
+1. Go to the [Sign Up website](hnr2025-2.vercel.app)
 2. Enjoy!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
