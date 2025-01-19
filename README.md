@@ -88,6 +88,8 @@ Start your heroic journey by hunting down the "Submit" button that refuses to st
 
 ### Level 2: Curse of the Multiplying Cursors
 
+<img src="src/app/assets/LevelTwo.png" alt="LevelTwo screenshot" width="700" height="auto">
+
 An IT glitch gone rogue spawns endless cursors across your screen. Navigate through the confusion, avoid the decoy pointers, and use logic to identify the true cursor capable of completing your task. Can you outsmart the curse before your sanity splits?
 
 ### Level 3: Evil Simon's Pattern Protocol
