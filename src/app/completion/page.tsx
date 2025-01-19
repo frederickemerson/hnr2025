@@ -11,8 +11,13 @@ const CompletionScreen = () => {
   const [floatingElements] = useState(Array(20).fill(null));
   const [showMainContent, setShowMainContent] = useState(false);
   const [showFinalButton, setShowFinalButton] = useState(false);
+  const [windowHeight, setWindowHeight] = useState(0);
+
 
   useEffect(() => {
+    // Set window height after component mounts
+    setWindowHeight(window.innerHeight);
+    
     setTimeout(() => setShowConfetti(true), 500);
     setTimeout(() => setShowMainContent(true), 1500);
     setTimeout(() => setShowFinalButton(true), 3000);
@@ -36,7 +41,7 @@ const CompletionScreen = () => {
             className="absolute text-white font-mono text-sm"
             style={{ left: `${i * 5}%` }}
             animate={{
-              y: [-100, window.innerHeight + 100],
+              y: [-100, windowHeight + 100],
               opacity: [0, 0.5, 0]
             }}
             transition={{
@@ -202,35 +207,35 @@ const CompletionScreen = () => {
             </motion.div>
 
             {/* Binary rain effect */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.1 }}
-            >
-              {Array.from({ length: 20 }).map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute text-white font-mono text-xs"
-                  style={{
-                    left: `${i * 5}%`,
-                    top: -20
-                  }}
-                  animate={{
-                    y: [0, window.innerHeight + 20]
-                  }}
-                  transition={{
-                    duration: 5 + Math.random() * 3,
-                    repeat: Infinity,
-                    ease: "linear",
-                    delay: Math.random() * 2
-                  }}
-                >
-                  {Array.from({ length: 20 }).map((_, j) => (
-                    <div key={j}>{Math.round(Math.random())}</div>
-                  ))}
-                </motion.div>
-              ))}
-            </motion.div>
+             <motion.div
+        className="absolute inset-0 pointer-events-none overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.1 }}
+      >
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-white font-mono text-xs"
+            style={{
+              left: `${i * 5}%`,
+              top: -20
+            }}
+            animate={{
+              y: [0, windowHeight + 20]
+            }}
+            transition={{
+              duration: 5 + Math.random() * 3,
+              repeat: Infinity,
+              ease: "linear",
+              delay: Math.random() * 2
+            }}
+          >
+            {Array.from({ length: 20 }).map((_, j) => (
+              <div key={j}>{Math.round(Math.random())}</div>
+            ))}
+          </motion.div>
+        ))}
+      </motion.div>
 
             {/* Return button */}
             <AnimatePresence>
@@ -267,7 +272,7 @@ const CompletionScreen = () => {
       <motion.div
         className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-white to-transparent opacity-[0.02]"
         animate={{
-          y: [-100, window.innerHeight]
+          y: [-100, windowHeight]
         }}
         transition={{
           duration: 5,
