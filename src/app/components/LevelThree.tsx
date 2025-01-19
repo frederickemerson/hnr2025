@@ -18,6 +18,7 @@ interface Question {
   answers: string[];
   correct: number;
 }
+
 // CS interview questions for the evil part of the game
 const QUESTIONS: Question[] = [
   {
@@ -86,12 +87,14 @@ export default function SimonGame() {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>('idle');
   const [sequence, setSequence] = useState<number[]>([]);
+  const [userSequence, setUserSequence] = useState<number[]>([]); // Add this
   const [score, setScore] = useState(0);
   const [countdown, setCountdown] = useState(3);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [gameSpeed, setGameSpeed] = useState(1000);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showFailure, setShowFailure] = useState(false);
   const [shuffledButtons, setShuffledButtons] = useState<Button[]>(BUTTONS);
 
   const audioContext = useRef<AudioContext>();
@@ -133,33 +136,96 @@ export default function SimonGame() {
   }, []);
 
   const shuffleButtons = useCallback(() => {
-    setShuffledButtons(prevButtons => {
+    setShuffledButtons((prevButtons) => {
       const shuffled = [...prevButtons];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        const temp = shuffled[i]!;  // Assert non-null with !
+        const temp = shuffled[i]!; // Assert non-null with !
         shuffled[i] = shuffled[j]!; // Assert non-null with !
         shuffled[j] = temp;
       }
       return shuffled;
     });
   }, []);
-  
-  // Start new game or next round
+
   const startRound = useCallback(() => {
     setGameState('countdown');
     setCountdown(3);
   }, []);
 
-  // Add new step to sequence
   const addToSequence = useCallback(() => {
     const newStep = Math.floor(Math.random() * 4);
-    setSequence(prev => [...prev, newStep]);
+    setSequence((prev) => [...prev, newStep]);
   }, []);
 
-  // Play the current sequence
+
+  
+  const handleButtonClick = useCallback((buttonId: number) => {
+    if (gameState !== 'userTurn') return;
+  
+    const button = BUTTONS[buttonId];
+    if (!button) return;
+  
+    playSound(button.sound);
+    setActiveButton(buttonId);
+    
+    const newUserSequence = [...userSequence, buttonId];
+    setUserSequence(newUserSequence);
+    
+    // Check if the new input is correct
+    if (buttonId !== sequence[userSequence.length]) {
+      setShowFailure(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      return;
+    }
+    
+    // If user completed the sequence correctly
+    if (newUserSequence.length === sequence.length) {
+      setUserSequence([]); // Reset user sequence
+      setGameState('question');
+    }
+    
+    const timer = setTimeout(() => {
+      setActiveButton(null);
+      shuffleButtons();
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [gameState, sequence, userSequence, shuffleButtons, playSound]);
+
+  const handleAnswer = useCallback((answerIndex: number) => {
+    const currentQuestionObj = QUESTIONS[currentQuestion];
+    if (!currentQuestionObj) return;
+
+    const correct = currentQuestionObj.correct === answerIndex;
+    
+    if (correct) {
+      setScore(prev => {
+        const newScore = prev + 1;
+        if (newScore >= 5) {
+          setShowSuccess(true);
+          setTimeout(() => {
+            router.push('/level/4');
+          }, 2000);
+        }
+        return newScore;
+      });
+      setGameSpeed(prev => prev * 0.9);
+      setSequence(prev => [...prev, Math.floor(Math.random() * 4)]);
+    } else {
+      setGameSpeed(prev => prev * 0.8);
+      setSequence(prev => [...prev, Math.floor(Math.random() * 4)]);
+    }
+
+    setCurrentQuestion(prev => (prev + 1) % QUESTIONS.length);
+    startRound();
+  }, [currentQuestion, router, startRound]);
+
   const playSequence = useCallback(async () => {
     setGameState('playing');
+    setUserSequence([]); // Reset user sequence at start of playback
     
     for (const buttonId of sequence) {
       const button = BUTTONS[buttonId];
@@ -174,62 +240,6 @@ export default function SimonGame() {
     
     setGameState('userTurn');
   }, [sequence, gameSpeed, playSound]);
-
-  // Handle user button clicks
-  const handleButtonClick = useCallback((buttonId: number) => {
-    if (gameState !== 'userTurn') return;
-  
-    const button = BUTTONS[buttonId];
-    if (!button) return;
-  
-    playSound(button.sound);
-    setActiveButton(buttonId);
-    
-    const timer = setTimeout(() => {
-      setActiveButton(null);
-      shuffleButtons();
-    }, 300);
-  
-    const currentIndex = sequence.length;
-
-    // Check if we're exceeding the sequence length
-    if (currentIndex >= sequence.length) {
-      void router.push('/level/3');
-      return;
-    }
-  
-    if (buttonId !== sequence[currentIndex]) {
-      void router.push('/level/3');
-      return;
-    }
-  
-    if (currentIndex === sequence.length - 1) {
-      setGameState('question');
-    }
-  
-    return () => clearTimeout(timer);
-  }, [gameState, sequence, router, shuffleButtons, playSound]);
-
-  // Handle question answers
-  const handleAnswer = useCallback((answerIndex: number) => {
-    // Add guard clause to handle potential undefined question
-    const currentQuestionObj = QUESTIONS[currentQuestion];
-    if (!currentQuestionObj) return;
-
-    const correct = currentQuestionObj.correct === answerIndex;
-    
-    if (correct) {
-        setScore(prev => prev + 1);
-        setGameSpeed(prev => prev * 0.9); // Speed up game
-        addToSequence();
-    } else {
-        setGameSpeed(prev => prev * 0.8); // Penalty
-        setSequence(prev => [...prev, Math.floor(Math.random() * 4)]); // Add random step
-    }
-
-    setCurrentQuestion(prev => (prev + 1) % QUESTIONS.length);
-    startRound();
-}, [currentQuestion, addToSequence, startRound]);
 
   // Countdown effect
   useEffect(() => {
@@ -283,7 +293,7 @@ export default function SimonGame() {
         )}
       </AnimatePresence>
 
-      {/* Game buttons */}
+      {/* Game buttons */}å
       <div className="grid grid-cols-2 gap-4">
       {shuffledButtons.map((button: Button) => (
         <motion.button
@@ -340,6 +350,37 @@ export default function SimonGame() {
     </motion.div>
   )}
 </AnimatePresence>
+
+<AnimatePresence>
+        {showFailure && (
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center bg-red-900 bg-opacity-90 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="text-center"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", damping: 10 }}
+            >
+              <div className="text-6xl font-bold text-white mb-6">
+                Wrong Sequence! 😔
+              </div>
+              <motion.div
+                className="text-3xl text-white"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                Try Again...
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       <AnimatePresence>
   {showSuccess && (
     <motion.div
