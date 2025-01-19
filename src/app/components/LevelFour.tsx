@@ -137,11 +137,6 @@ const MazeGame = () => {
       if (y >= 0 && y < mazeLayout.length && x >= 0 && x < mazeLayout[0]?.length) {
         if (mazeLayout[y][x] === " " || 
             (y === mazeLayout.length - 2 && x === mazeLayout[0].length - 2)) {
-          
-          if (x === specialPoint.x && y === specialPoint.y && !audioPlayed) {
-            playAudio();
-            return;
-          }
 
           // Win condition
           if (y === mazeLayout.length - 2 && x === mazeLayout[0].length - 2) {
@@ -182,6 +177,7 @@ const MazeGame = () => {
 
   useEffect(() => {
     if (isGameOver) {
+      playAudio();
       resetGame();
     }
   }, [isGameOver]);
@@ -206,6 +202,7 @@ const MazeGame = () => {
         Enter through the green...<br/>
         <span className="text-red-500">and hope you aren't seen</span>
       </div>
+      <span className="text-green-500">Click on the green zone to start</span>
       {gameStarted && !isGameOver && !hasWon && (
         <motion.div 
           className="absolute left-4 top-4 rounded-lg bg-gray-800 p-4 shadow-lg"
@@ -272,7 +269,6 @@ const MazeGame = () => {
               className="absolute h-screen w-screen object-cover"
               initial={{ scale: 2 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 0.5 }}
             />
           <div className={`${fp.className} text-center relative z-50`}>
             <div className="text-xl text-red-500">Cooldown: {cooldownTime}s</div>
