@@ -74,7 +74,7 @@ Do you have what it takes to become the legendary Bureaucracy Hero? Sign up now 
 
 ## Getting Started
 
-1. Go to the [Sign Up website](hnr2025-2.vercel.app)
+1. Go to the [Sign Up website](https://hnr2025-2.vercel.app)
 2. Enjoy!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
