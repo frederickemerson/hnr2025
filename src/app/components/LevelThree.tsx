@@ -194,12 +194,12 @@ export default function SimonGame() {
 
     // Check if we're exceeding the sequence length
     if (currentIndex >= sequence.length) {
-      void router.push('/');
+      void router.push('/level/3');
       return;
     }
   
     if (buttonId !== sequence[currentIndex]) {
-      void router.push('/');
+      void router.push('/level/3');
       return;
     }
   
