@@ -10,34 +10,39 @@ const fp = Finger_Paint({
   display: "swap",
 });
 
-interface Position {
+type Position = {
   x: number;
   y: number;
-}
+};
 
-interface Direction extends Position {
+type Direction = {
+  x: number;
+  y: number;
   dx: number;
   dy: number;
-}
+};
 
 const generateMaze = (rows: number, cols: number): string[][] => {
-  const maze: string[][] = Array.from({ length: rows }, () =>
+  // Initialize the maze with walls
+  const maze = Array.from({ length: rows }, () =>
     Array.from({ length: cols }, () => "#")
   );
 
-  const isValid = (x: number, y: number): boolean =>
+  // Helper function to check if a cell is within bounds
+  const isValid = (x: number, y: number): boolean => 
     x > 0 && x < rows - 1 && y > 0 && y < cols - 1;
 
+  // Stack for backtracking
   const stack: Position[] = [];
   const startX = 1;
   const startY = 1;
 
-  if (maze[startX] && maze[startX][startY] !== undefined) {
-    maze[startX][startY] = " ";
-  }
+  // Mark start cell as visited
+  maze[startX][startY] = " ";
   stack.push({ x: startX, y: startY });
 
-  const directions: Array<[number, number]> = [
+  // Directions: right, down, left, up
+  const directions: [number, number][] = [
     [0, 2],
     [2, 0],
     [0, -2],
@@ -45,12 +50,10 @@ const generateMaze = (rows: number, cols: number): string[][] => {
   ];
 
   while (stack.length > 0) {
-    const current = stack[stack.length - 1];
-    if (!current) {
-      stack.pop();
-      continue;
-    }
-
+    const current = stack[stack.length - 1]!;
+    if (!current) continue;
+    
+    // Get unvisited neighbors
     const unvisitedNeighbors = directions
       .map(([dx, dy]) => ({
         x: current.x + dx,
@@ -58,58 +61,42 @@ const generateMaze = (rows: number, cols: number): string[][] => {
         dx,
         dy
       }))
-      .filter(({ x, y }) => isValid(x, y) && maze[x]?.[y] === "#");
+      .filter(({ x, y }) => isValid(x, y) && maze[x][y] === "#");
 
     if (unvisitedNeighbors.length > 0) {
-      const neighbor =
-        unvisitedNeighbors[Math.floor(Math.random() * unvisitedNeighbors.length)];
-
-      if (neighbor) {
-        const { x, y, dx, dy } = neighbor;
-        if (maze[x] && maze[x][y] !== undefined) {
-          maze[x][y] = " ";
-        }
-        const midX = current.x + dx / 2;
-        const midY = current.y + dy / 2;
-
-        if (
-          midX >= 0 && midX < maze.length &&
-          midY >= 0 && maze[midX]?.[midY] !== undefined
-        ) {
-          maze[midX][midY] = " ";
-        }
-        
-        stack.push({ x, y });
-      }
+      // Randomly choose a neighbor
+      const { x, y, dx, dy } = unvisitedNeighbors[
+        Math.floor(Math.random() * unvisitedNeighbors.length)
+      ];
+      
+      // Carve a path
+      maze[x][y] = " ";
+      maze[current.x + dx/2][current.y + dy/2] = " ";
+      stack.push({ x, y });
     } else {
       stack.pop();
     }
   }
 
-  // Ensure indices are within bounds before modifying maze
-  if (maze[0]?.[1] !== undefined) maze[0][1] = " ";
-  const setMazeValue = (x: number, y: number, value: string) => {
-    if (maze[x] && maze[x][y] !== undefined) {
-      maze[x][y] = value;
-    }
-  };
-  
-  setMazeValue(rows - 2, cols - 2, " ");
-  setMazeValue(rows - 2, cols - 3, " ");
-  setMazeValue(rows - 3, cols - 2, " ");
+  // Set entrance and exit
+  maze[0][1] = " ";  // Entrance
+  maze[rows - 2][cols - 2] = " ";  // Exit
+  maze[rows - 2][cols - 3] = " ";  // Path to exit
+  maze[rows - 3][cols - 2] = " ";  // Additional path near exit
+
   return maze;
 };
 
-
-const MazeGame: React.FC = () => {
+const MazeGame = () => {
   const [mazeLayout, setMazeLayout] = useState<string[][]>([]);
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [hasWon, setHasWon] = useState(false);
-  const [timer, setTimer] = useState(30);
-  const [audioPlayed, setAudioPlayed] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [cooldown, setCooldown] = useState(false);
-  const [cooldownTime, setCooldownTime] = useState(5);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [hasWon, setHasWon] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(30);
+  const [audioPlayed, setAudioPlayed] = useState<boolean>(false);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [cooldown, setCooldown] = useState<boolean>(false);
+  const [cooldownTime, setCooldownTime] = useState<number>(5);
+  const specialPoint: Position = { x: 5, y: 5 };
 
   const router = useRouter();
 
@@ -132,36 +119,38 @@ const MazeGame: React.FC = () => {
   }, [timer, isGameOver, hasWon, gameStarted]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!gameStarted) return; // Don't process mouse movement if game hasn't started
+
     const mazeElement = document.getElementById("maze");
-    if (!mazeElement || !mazeLayout[0]) return;
+    if (mazeElement) {
+      const bounds = mazeElement.getBoundingClientRect();
+      const x = Math.floor((e.clientX - bounds.left) / 30);
+      const y = Math.floor((e.clientY - bounds.top) / 30);
 
-    const bounds = mazeElement.getBoundingClientRect();
-    const x = Math.floor((e.clientX - bounds.left) / 30);
-    const y = Math.floor((e.clientY - bounds.top) / 30);
+      // Check if position is within maze bounds
+      if (y >= 0 && y < mazeLayout.length && x >= 0 && x < mazeLayout[0]?.length) {
+        if (mazeLayout[y][x] === " " || 
+            (y === mazeLayout.length - 2 && x === mazeLayout[0].length - 2)) {
 
-    if ((y === 0 && x === 1) || (y === 1 && x === 1)) {
-      if (!gameStarted) {
-        setGameStarted(true);
-      }
-      return;
-    }
-
-    if (
-      mazeLayout?.[y]?.[x] !== undefined // Ensure mazeLayout[y][x] is defined
-    ) {
-      if (mazeLayout[y][x] === " " || 
-          (y === (mazeLayout.length ?? 0) - 2 && x === (mazeLayout[0]?.length ?? 0) - 2)) {
-    
-        if (y === (mazeLayout.length ?? 0) - 2 && x === (mazeLayout[0]?.length ?? 0) - 2) {
-          setHasWon(true);
-          const timer = setTimeout(() => {
-            router.push('/level/5');
-          }, 2000);
-          return () => clearTimeout(timer);
+          // Win condition
+          if (y === mazeLayout.length - 2 && x === mazeLayout[0].length - 2) {
+            setHasWon(true);
+            const timer = setTimeout(() => {
+              router.push('/level/5');
+            }, 2000);
+            return () => clearTimeout(timer);
+          }
+        } else if (mazeLayout[y][x] === "#") {
+          setIsGameOver(true);
         }
-      } else if (mazeLayout[y][x] === "#" && gameStarted) {
-        setIsGameOver(true);
       }
+    }
+  };
+
+  const handleCellClick = (rowIndex: number, colIndex: number) => {
+    // Start game only when clicking the green entrance tile
+    if (!gameStarted && rowIndex === 0 && colIndex === 1) {
+      setGameStarted(true);
     }
   };
 
@@ -200,6 +189,7 @@ const MazeGame: React.FC = () => {
       audio.play().catch(error => console.log('Audio play failed:', error));
       setAudioPlayed(true);
       
+      // Reset after 5 seconds
       setTimeout(() => {
         resetGame();
       }, 5000);
@@ -232,7 +222,7 @@ const MazeGame: React.FC = () => {
         onMouseMove={handleMouseMove}
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${mazeLayout[0]?.length || 0}, 30px)`,
+          gridTemplateColumns: `repeat(${mazeLayout[0]?.length}, 30px)`,
           gridTemplateRows: `repeat(${mazeLayout.length}, 30px)`
         }}
       >
@@ -244,11 +234,12 @@ const MazeGame: React.FC = () => {
               cellClass = "bg-blue-500";
             }
 
+            // Special styling for entrance and exit
             if (rowIndex === 0 && colIndex === 1) {
-              cellClass = "bg-green-500 animate-pulse";
+              cellClass = "bg-green-500 animate-pulse cursor-pointer";
             } else if (
               rowIndex === mazeLayout.length - 2 &&
-              colIndex === (mazeLayout[0]?.length ?? 0) - 2
+              colIndex === mazeLayout[0]?.length - 2
             ) {
               cellClass = "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-gradient";
             }
@@ -260,6 +251,7 @@ const MazeGame: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: (rowIndex + colIndex) * 0.01 }}
+                onClick={() => handleCellClick(rowIndex, colIndex)}
               />
             );
           })
@@ -273,12 +265,12 @@ const MazeGame: React.FC = () => {
           animate={{ opacity: 1 }}
         >
           <motion.img
-            src={Scary.src}
-            alt="Scary"
-            className="absolute h-screen w-screen object-cover"
-            initial={{ scale: 2 }}
-            animate={{ scale: 1 }}
-          />
+              src={Scary.src}
+              alt="Scary"
+              className="absolute h-screen w-screen object-cover"
+              initial={{ scale: 2 }}
+              animate={{ scale: 1 }}
+            />
           <div className={`${fp.className} text-center relative z-50`}>
             <div className="text-xl text-red-500">Cooldown: {cooldownTime}s</div>
           </div>
