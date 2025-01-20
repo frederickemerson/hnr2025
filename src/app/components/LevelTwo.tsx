@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CursorConfig {
   offsetX: number;
@@ -36,13 +36,13 @@ const CursorGame: React.FC = () => {
   const [fakeCursors, setFakeCursors] = useState<CursorConfig[]>([]);
   const [clicks, setClicks] = useState<number>(0);
   const [mousePos, setMousePos] = useState<Position>({ x: 0, y: 0 });
-  const [tabPos, setTabPos] = useState<Position>({ 
-    x: typeof window !== 'undefined' ? window.innerWidth/2 : 0, 
-    y: typeof window !== 'undefined' ? window.innerHeight/2 : 0 
+  const [tabPos, setTabPos] = useState<Position>({
+    x: typeof window !== "undefined" ? window.innerWidth / 2 : 0,
+    y: typeof window !== "undefined" ? window.innerHeight / 2 : 0,
   });
   const [particles, setParticles] = useState<Particle[]>([]);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
-  
+
   const TARGET_CLICKS = 5;
   const INITIAL_CURSORS = 4;
   const MAX_OFFSET = 500;
@@ -55,8 +55,8 @@ const CursorGame: React.FC = () => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const CursorGame: React.FC = () => {
     if (clicks >= TARGET_CLICKS) {
       setShowSuccess(true);
       const timer = setTimeout(() => {
-        router.push('/level/3');
+        router.push("/level/3");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -97,9 +97,9 @@ const CursorGame: React.FC = () => {
       angle: (Math.PI * 2 * i) / 12,
       velocity: 8 + Math.random() * 8,
     }));
-    setParticles(prev => [...prev, ...newParticles]);
+    setParticles((prev) => [...prev, ...newParticles]);
     setTimeout(() => {
-      setParticles(prev => prev.filter(p => !newParticles.includes(p)));
+      setParticles((prev) => prev.filter((p) => !newParticles.includes(p)));
     }, 1000);
   };
 
@@ -107,45 +107,49 @@ const CursorGame: React.FC = () => {
     if (clicks >= TARGET_CLICKS) return;
 
     createParticles(e.clientX, e.clientY);
-    setClicks(prev => prev + 1);
-    
+    setClicks((prev) => prev + 1);
+
     const newCursorCount = fakeCursors.length * 4;
     generateCursors(newCursorCount);
-    
-    setTabSize(prev => Math.max(prev * 0.3, 15));
-    
+
+    setTabSize((prev) => Math.max(prev * 0.3, 15));
+
     setTabPos({
       x: Math.random() * (window.innerWidth - 100),
-      y: Math.random() * (window.innerHeight - 100)
+      y: Math.random() * (window.innerHeight - 100),
     });
   };
 
   useEffect(() => {
-    document.body.style.cursor = 'none';
+    document.body.style.cursor = "none";
     return () => {
-      document.body.style.cursor = 'default';
+      document.body.style.cursor = "default";
     };
   }, []);
 
   const useCursorAnimation = (cursor: CursorConfig): Position => {
     const time = Date.now() * 0.001;
-    const xOffset = cursor.offsetX + Math.sin(time * cursor.frequency + cursor.phase) * cursor.amplitude;
-    const yOffset = cursor.offsetY + Math.cos(time * cursor.frequency + cursor.phase) * cursor.amplitude;
-    
+    const xOffset =
+      cursor.offsetX +
+      Math.sin(time * cursor.frequency + cursor.phase) * cursor.amplitude;
+    const yOffset =
+      cursor.offsetY +
+      Math.cos(time * cursor.frequency + cursor.phase) * cursor.amplitude;
+
     return {
       x: mousePos.x + xOffset,
-      y: mousePos.y + yOffset
+      y: mousePos.y + yOffset,
     };
   };
 
   const Cursor: React.FC<CursorProps> = ({ cursor }) => {
     const pos = useCursorAnimation(cursor);
-    
+
     return (
-      <motion.div 
-        className="absolute pointer-events-none select-none"
-        style={{ 
-          left: pos.x, 
+      <motion.div
+        className="pointer-events-none absolute select-none"
+        style={{
+          left: pos.x,
           top: pos.y,
           zIndex: 9999,
         }}
@@ -163,14 +167,10 @@ const CursorGame: React.FC = () => {
             duration: 0.8 + Math.random() * 0.4,
             repeat: Infinity,
             repeatType: "reverse",
-          }
+          },
         }}
       >
-        <svg 
-          width="24" 
-          height="24" 
-          viewBox="0 0 20 20"
-        >
+        <svg width="24" height="24" viewBox="0 0 20 20">
           <motion.path
             d="M3.5,0 L3.5,14 L7,10.5 L10.5,15 L13,13.5 L9.5,9 L13.5,9 L3.5,0"
             fill="white"
@@ -185,9 +185,9 @@ const CursorGame: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-b bg-black text-white overflow-hidden">
+    <div className="relative h-screen w-full overflow-hidden bg-black bg-gradient-to-b text-white">
       <motion.div
-        className="absolute top-0 left-0 h-2 bg-blue-500"
+        className="absolute left-0 top-0 h-2 bg-blue-500"
         initial={{ width: 0 }}
         animate={{ width: `${progressPercentage}%` }}
         transition={{ duration: 0.3 }}
@@ -197,7 +197,7 @@ const CursorGame: React.FC = () => {
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
-            className="absolute w-2 h-2 bg-blue-400 rounded-full"
+            className="absolute h-2 w-2 rounded-full bg-blue-400"
             initial={{
               x: particle.x,
               y: particle.y,
@@ -216,7 +216,7 @@ const CursorGame: React.FC = () => {
         ))}
       </AnimatePresence>
 
-      <Cursor 
+      <Cursor
         cursor={{
           offsetX: 0,
           offsetY: 0,
@@ -224,22 +224,19 @@ const CursorGame: React.FC = () => {
           initialRotation: 0,
           amplitude: 0,
           frequency: 0,
-          phase: 0
+          phase: 0,
         }}
         index={0}
       />
-      
+
       {fakeCursors.map((cursor, index) => (
-        <Cursor
-          key={index}
-          cursor={cursor}
-          index={index}
-        />
+        <Cursor key={index} cursor={cursor} index={index} />
       ))}
 
       <motion.button
+        tabIndex={-1}
         onClick={handleClick}
-        className="absolute bg-white rounded-t-lg shadow-md overflow-hidden cursor-pointer"
+        className="absolute cursor-pointer overflow-hidden rounded-t-lg bg-white shadow-md"
         style={{
           left: tabPos.x,
           top: tabPos.y,
@@ -258,15 +255,13 @@ const CursorGame: React.FC = () => {
         }}
         transition={{ duration: 0.8, repeat: Infinity }}
       >
-        <motion.div 
-          className="flex items-center h-full px-2 bg-blue-500 hover:bg-blue-600 text-white cursor-none"
-        >
-          <motion.div 
-            className="w-2 h-2 rounded-full bg-white mr-1"
+        <motion.div className="flex h-full cursor-none items-center bg-blue-500 px-2 text-white hover:bg-blue-600">
+          <motion.div
+            className="mr-1 h-2 w-2 rounded-full bg-white"
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
           />
-          <div 
+          <div
             className="truncate text-white"
             style={{ fontSize: `${Math.max(tabSize * 0.2, 8)}px` }}
           >
@@ -275,16 +270,16 @@ const CursorGame: React.FC = () => {
         </motion.div>
       </motion.button>
 
-      <motion.div 
-        className="absolute top-4 right-4 text-lg font-bold text-gray-700 no-select"
+      <motion.div
+        className="no-select absolute right-4 top-4 text-lg font-bold text-gray-700"
         style={{ zIndex: 10001 }}
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 0.3 }}
         key={clicks}
       >
-        {clicks >= TARGET_CLICKS ? 
-          "Loading next level..." : 
-          `Cursors: ${fakeCursors.length} | Clicks left: ${TARGET_CLICKS - clicks}`}
+        {clicks >= TARGET_CLICKS
+          ? "Loading next level..."
+          : `Cursors: ${fakeCursors.length} | Clicks left: ${TARGET_CLICKS - clicks}`}
       </motion.div>
 
       <AnimatePresence>
@@ -297,14 +292,14 @@ const CursorGame: React.FC = () => {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="text-6xl font-bold text-white text-center"
+              className="text-center text-6xl font-bold text-white"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", damping: 10 }}
             >
               <div>Level Complete! 🎉</div>
-              <motion.div 
-                className="text-2xl mt-4"
+              <motion.div
+                className="mt-4 text-2xl"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
